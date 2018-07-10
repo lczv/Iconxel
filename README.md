@@ -1,11 +1,14 @@
 # Iconxel
+
 An utility that recreates a given image, using an array of smaller images.
 
 **Features:**
+
 * Custom image output size
 * Outputs the icon mapping as a text file (useful for drawing in chats using icons)
 
 **Usage:**
+
 Just change the values of the following parameters:
 
 * sourceImagePath (what image should be converted)
