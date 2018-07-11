@@ -13,9 +13,11 @@ class ImageConverter {
         private var sourceImage: BufferedImage? = null
         private var resizedImage: BufferedImage? = null
         private var outputImage: BufferedImage? = null
-        private var iconsMap = mutableMapOf<String, Triple<Int, Int, Int>>()
+        /* The first element of the Pair contains the image path and the second one contains the image name
+        The Triple contains the R,G,B means of that image*/
+        private var iconsMap = mutableMapOf<Pair<String, String>, Triple<Int, Int, Int>>()
 
-        fun convert(resizedImage: BufferedImage, iconsMap: Map<String, Triple<Int, Int, Int>>, outputImagePath: String, outputFileWriter: BufferedWriter, iconSize: Int, outputImageSize: Int) {
+        fun convert(resizedImage: BufferedImage, iconsMap: Map<Pair<String,String>, Triple<Int, Int, Int>>, outputImagePath: String, outputFileWriter: BufferedWriter, iconSize: Int, outputImageSize: Int) {
 
             var completion = resizedImage.width * resizedImage.height
             var cntStep = 0
@@ -29,6 +31,7 @@ class ImageConverter {
                             Color(resizedImage.getRGB(x, y)).blue)
 
                     var nearestImagePath = ""
+                    var nearestImageName = ""
                     var nearestImageValue = Integer.MAX_VALUE
 
                     // Iterate through all icons mean values
@@ -36,7 +39,8 @@ class ImageConverter {
                         val distance = calculateDistance(pixelColorTriple, value)
                         if (distance < nearestImageValue) {
                             nearestImageValue = distance
-                            nearestImagePath = key
+                            nearestImagePath = key.first
+                            nearestImageName = key.second
                         }
                         //println("Pixel ($x,$y) RGB (${pixelColorTripe.first},${pixelColorTripe.second},${pixelColorTripe.third}) -> Icon $key Distance $distance")
                     }
@@ -57,7 +61,7 @@ class ImageConverter {
                         }
                     }
 
-                    outputFileWriter.write(nearestImagePath)
+                    outputFileWriter.write(nearestImageName)
 
                     cntStep++
                     println("Completion: ${(((cntStep) * 100) / completion.toFloat()).toInt()}%")
@@ -94,7 +98,7 @@ class ImageConverter {
                 // Iterate through all icons in folder
                 val icons = File(iconsFolderPath).listFiles()
                 icons.forEach {
-                    iconsMap.put(it.absoluteFile.toString(),
+                    iconsMap.put(Pair(it.absoluteFile.toString(), it.nameWithoutExtension),
                             calculateMeanPixelValues(ImageIO.read(File(it.absoluteFile.toString()))))
 
                 }
